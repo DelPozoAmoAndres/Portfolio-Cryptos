@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar } from 'react-native';
-import { getActives, getTotal } from '../Services/balanceService';
-
-export default function Balance(props) {
+import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
+import { getActives, getTotal} from '../services/balanceService';
+import { NavBar } from '../components/navbar';
+var i=1;
+export const Balance=(props) =>{
     const [actives, setActives] = useState([])
-    console.log(actives)
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar />
-            <Text>{"balance total:" + parseFloat(getTotal(actives,props.currency)).toFixed(2)}</Text>
+        <SafeAreaView>
+      <StatusBar />           
+            <Text>{"balance total: " + parseFloat(getTotal(actives,props.currency)).toFixed(2)+" "+props.currency}</Text>
             <Button onPress={async () => setActives(await getActives())} title="Check" />
             <FlatList
                 data={actives}
-                renderItem={item=>renderItem(item,props.currency)}
+                renderItem={item=>renderActives(item,props.currency)}
                 keyExtractor={item => item.name} />
+            
+            <NavBar/>
         </SafeAreaView>
     );
 }
 
-const renderItem = ({ item }, currency = "USD") => {
-    console.log(item)
+const renderActives = ({ item }, currency = "USD") => {
     var index = 2
     if (currency === "EUR")
         index = 1
@@ -32,7 +33,6 @@ const renderItem = ({ item }, currency = "USD") => {
             <Text>{parseFloat(item.value[index]).toFixed(2) + " "+currency}</Text>
         </View>)
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
