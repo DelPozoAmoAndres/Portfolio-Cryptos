@@ -13,7 +13,8 @@ const getIds=async(tokens)=>{
               "sec-fetch-mode": "cors",
               "sec-fetch-site": "same-site",
               "Referer": "https://www.coingecko.com/",
-              "Referrer-Policy": "strict-origin-when-cross-origin"
+              "Referrer-Policy": "strict-origin-when-cross-origin",
+              "user-agent": "chrome"
             },
             "body": null,
             "method": "GET"
@@ -48,7 +49,8 @@ export const getPrices=async(tokens)=>{
           "sec-fetch-mode": "cors",
           "sec-fetch-site": "same-site",
           "Referer": "https://www.coingecko.com/",
-          "Referrer-Policy": "strict-origin-when-cross-origin"
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+          "user-agent": "chrome"
         },
         "body": null,
         "method": "GET"
@@ -69,7 +71,8 @@ const getTokens=async(prices)=>{
               "sec-fetch-mode": "cors",
               "sec-fetch-site": "same-site",
               "Referer": "https://www.coingecko.com/",
-              "Referrer-Policy": "strict-origin-when-cross-origin"
+              "Referrer-Policy": "strict-origin-when-cross-origin",
+              "user-agent": "chrome"
             },
             "body": null,
             "method": "GET"
