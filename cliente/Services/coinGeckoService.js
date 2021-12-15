@@ -27,7 +27,6 @@ const getIds=async(tokens)=>{
     }
     return list;
 }
-
 export const getPrices=async(tokens)=>{
     var idsList=await getIds(tokens);
     var ids="";
@@ -57,7 +56,6 @@ export const getPrices=async(tokens)=>{
       }).then(res => res.json());
       return getTokens(prices)
 }
-
 const getTokens=async(prices)=>{
     var list=new Map()
     var data=await fetch("https://api.coingecko.com/api/v3/coins/list", {
@@ -77,14 +75,12 @@ const getTokens=async(prices)=>{
             "body": null,
             "method": "GET"
           }).then(res=>res.json());
-    console.log(prices)
     for(var p in prices){
         var crypto=_.where(data,{id : p})
         if(crypto.length>0){
             list.set(crypto[0]["symbol"].toUpperCase(),[prices[p]["eur"],prices[p]["usd"]])
         }
     }
-    console.log(list)
     return list;
 }
 

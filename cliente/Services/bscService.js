@@ -31,22 +31,30 @@ const parseData = (data) => {
     for (var i = 0; i < output.length; i++) {
         output[i] = output[i]
             .replace("'/images/main/empty-token.png'>", "")
-            .replace("></div><div class='media-body font-weight-bold'>", ",,,")
-            .replace("</div></div></td><td>", ",")
-            .replace("</td><td>", ",")
+            .replace("></div><div class='media-body font-weight-bold'>", ";;;")
+            .replace("</div></div></td><td>", ";")
+            .replace("</td><td>", ";")
             .replace("</td><td>")
-            .replace("href='/address/", ",")
+            .replace("href='/address/", ";")
             .replace("'><span data-toggle='tooltip' title=", "")
-            .replace("><font color=''>", ",")
+            .replace("><font color=''>", ";")
             .replace("...</font></span></a><a class='hash-tag text-truncate d-block font-size-1' data-toggle='tooltip' title=", "")
-            .replace("undefined", ",")
+            .replace("undefined", ";")
             .replace("'", "")
-            .replace("'></div><div class='media-body'><a class='hash-tag text-truncate font-weight-bold' href='", ",")
-            .split(",")
-        if(checkToken(output[i][4]))
-            list.push({name:output[i][4],balance:output[i][5]})
+            .replace("'></div><div class='media-body'><a class='hash-tag text-truncate font-weight-bold' href='", ";")
+            .replace("'","")
+            .replace("<i class='fa fa-caret-","")
+            .replace("'></i> ","")
+            .replace("down",";-")
+            .replace("up",";")
+            .replace("%</span>",";")
+            .replace("%</font>",";")
+            .replace("</a><a ",";")
+            .split(";")
+        if(output[i].length==9 && parseFloat(output[i][5])>0){
+            list.push({name:output[i][4],balance:output[i][5],img:output[i][0]})
+        }
     }
-    console.log(list)
     return list
 }
 

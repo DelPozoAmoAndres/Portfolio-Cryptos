@@ -8,7 +8,7 @@ export default function App() {
   return (
     <Router hideNavBar="true">
       <Scene key="root" tabs={false} hideNavBar={true}>
-        <Scene key="balance" component={Balance} currency="EUR" title="balance" initial={true} />
+        <Scene key="balance" component={Balance} currency="USD" title="balance" initial={true} />
         <Scene key="accounts" component={Account}  title="accounts" />
       </Scene>
     </Router>
