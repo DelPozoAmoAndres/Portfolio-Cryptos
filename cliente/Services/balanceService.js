@@ -65,6 +65,10 @@ export const getBalanceHistory = async()=>{
     return await getBalances()
 }
 
+export const deleteHistory = async () =>{
+    return  await removeBalancesHistory();
+}
+
 export const addHistory= async(actives)=>{
     await addBalanceHistory(actives)
     return await getBalanceHistory()

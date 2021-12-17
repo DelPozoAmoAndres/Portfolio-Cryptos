@@ -1,7 +1,7 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import _ from "underscore"
-import { getActives, getTotal } from './balanceService';
+import { getActives, getBalanceHistory, getTotal } from './balanceService';
 
 const storage = new Storage({
     // maximum capacity, default 1000 key-ids
@@ -69,6 +69,7 @@ export const getAddress = async () => {
 }
 
 export const getBalances = async () => {
+    
     return storage
         .load({
             key: 'balanceHistory',
@@ -110,6 +111,7 @@ export const removeBalancesHistory = async (addr) => {
         key: 'balanceHistory', // Note: Do not use underscore("_") in key!
         data: [[],[]],
     });
+    return getBalances();
 }
 
 
