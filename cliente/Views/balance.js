@@ -4,11 +4,11 @@ import { getActives, addHistory, getPorcetage, getTotal, getPorcentageActive, de
 import { NavBar } from '../components/navbar';
 import { callEther } from '../services/etherService';
 import { LineGraph } from '../components/lineGraph';
+import { random } from 'underscore';
 export const Balance = (props) => {
     const [actives, setActives] = useState([])
-    const [balanceHistory, setBalanceHistory] = useState([])
-    const [dayHistory, setDayHistory] = useState([])
-    const porcentage = getPorcetage(actives)
+    const [balanceHistory, setBalanceHistory] = useState([[],[]])
+    const porcentage = getPorcetage(actives, balanceHistory[1])
     return (
         <SafeAreaView style={{ width: "100%", height: "100%", maxWidth: 500, alignSelf: "center" }}>
             <StatusBar />
@@ -28,19 +28,24 @@ export const Balance = (props) => {
                 <LineGraph
                     height={"100%"}
                     width={"100%"}
-                    data={balanceHistory}
+                    data={balanceHistory[1]}
                     currency={props.currency}
 
                 />
             </View>
             <View >
-                <Button onPress={async () => { var actives = await getActives(); setActives(actives); var history = await addHistory(actives); setDayHistory(history[0]); setBalanceHistory(history[1]) }} title="Check" />
+                <Button onPress={async () => { var actives = await getActives(); setActives(actives); var history = await addHistory(actives); setBalanceHistory(history) }} title="Check" />
                 <Button onPress={async () => await callEther("0xb35E7381FB2EbA8781707f1cAc14B7722Dbb8485")} title="Ether" />
-                <Button onPress={async () => { var history = await deleteHistory(); setDayHistory(history[0]); setBalanceHistory(history[1]) }} title="Delete Historial" />
                 <FlatList
                     data={actives}
                     renderItem={item => renderActives(item, props.currency, balanceHistory)}
                     keyExtractor={item => item.name} />
+                <Button onPress={async () => { var history = await deleteHistory(); setBalanceHistory(history) }} title="Delete Historial" />
+                <FlatList
+                    data={balanceHistory[1]}
+                    renderItem={item => renderHistory(item,balanceHistory)}
+                    keyExtractor={item => random(100)}
+                />
             </View>
             <NavBar selected="2" />
         </SafeAreaView>
@@ -58,11 +63,10 @@ const renderActives = ({ item }, currency = "USD", history) => {
                 <View style={{ flexDirection: "row" }}>
                     <Image style={{ height8: 40, width: 40 }} source={{
                         uri: "https://bscscan.com" + item.value[4],
-                        method: 'POST',
+                        method: 'GET',
                         headers: {
-                            Pragma: 'no-cache'
+                            "user-agent": "chrome"
                         },
-                        body: 'Your Body goes here'
                     }} />
                     <Text> </Text>
                     <Text style={{ fontSize: 30 }}>{item.name}</Text>
@@ -86,6 +90,18 @@ const renderActives = ({ item }, currency = "USD", history) => {
             </View>
 
         </View >)
+}
+
+const renderHistory = ({ item },balanceHistory) => {
+    var date;
+    for (var i=0;i< balanceHistory[1].length;i++)
+        if(balanceHistory[1][i]==item)
+            var date=balanceHistory[0][i];
+    return (
+        <View style={{ borderColor: "gray", borderWidth: 1, paddingLeft: "2%", paddingRight: "2%" }}>
+            <Text> {item.toFixed(2)+" USD"}</Text>
+            <Text> {date}</Text>
+        </View>)
 }
 
 const styles = StyleSheet.create({

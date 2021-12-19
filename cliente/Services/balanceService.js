@@ -1,7 +1,6 @@
 import { callBsc } from './bscService';
 import { getPrices } from './coinGeckoService';
-import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './accountsService';
-import { Account } from '../views/accounts';
+import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './storageService';
 
 export const getActives = async () => {
     var address=await getAddress()
@@ -52,21 +51,21 @@ const getTokens = async () => {
     return tokens
 }
 
-export const getPorcetage = (actives)=>{
-    var porcentages=0
+export const getPorcetage = (actives,balanceHistory)=>{
     var totalUSD=getTotal(actives)
-    for(var i=0;i<actives.length;i++){
-        porcentages=porcentages+((actives[i].value[2]/totalUSD)*parseFloat(actives[i].value[3]))
-    }
-    return porcentages.toFixed(2)
+    if(balanceHistory.length<=1)
+        return 0;
+    var totalUSDHistory=getTotal(balanceHistory[balanceHistory.length-2])
+    return ((totalUSD-totalUSDHistory)/totalUSDHistory).toFixed(2);
 }
 
 export const getBalanceHistory = async()=>{
-    return await getBalances()
+    return await getBalances(true)
 }
 
 export const deleteHistory = async () =>{
-    return  await removeBalancesHistory();
+    await removeBalancesHistory();
+    return await getBalanceHistory()
 }
 
 export const addHistory= async(actives)=>{

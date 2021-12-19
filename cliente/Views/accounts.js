@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
 
-import { addAddres, removeAddres, getAddress } from "../services/accountsService"
+import { addAddres, removeAddres, getAddress } from "../services/storageService"
 import { NavBar } from '../components/navbar';
 
 export const Account = (props) => {

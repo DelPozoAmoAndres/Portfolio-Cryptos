@@ -17,10 +17,11 @@ export const LineGraph =(props)=> {
         data.forEach((element,index,array) => {
             array[index]=getTotal(element,props.currency) 
         });
-        var color='rgb(0, 255, )'
-        if(props.data.length>1 && props.data[props.data.length-1]<props.data[props.data.length-2])
+        var color='rgb(0, 255,0 )'
+        if(data.length>1 && data[data.length-1]<data[data.length-2])
             color='rgb(255, 0, 0)'
         console.log(data)
+        
         return (
             <LineChart
                 style={ { height: props.height,width:props.width } }

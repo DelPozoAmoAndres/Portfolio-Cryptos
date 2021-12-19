@@ -35,7 +35,6 @@ export const addAddres = async (addr) => {
             data: address,
         });
     }
-    console.log(address)
 }
 
 export const removeAddres = async (addr) => {
@@ -47,7 +46,6 @@ export const removeAddres = async (addr) => {
             data: address,
         });
     }
-    console.log(address)
 }
 
 export const getAddress = async () => {
@@ -68,21 +66,21 @@ export const getAddress = async () => {
         });
 }
 
-export const getBalances = async () => {
-    
+export const getBalances = async (cloned=false) => {
+    const clone=(items)=>items.map(item => (Array.isArray(item) ? clone(item) : item));
     return storage
         .load({
             key: 'balanceHistory',
-        }).then(res => res)
+        }).then(res =>cloned?clone(res):res)
         .catch(err => {
             // any exception including data not found
             // goes to catch()
             console.warn(err.message);
             switch (err.name) {
                 case 'NotFoundError':
-                    return [[],[]];
+                    return [[], []];
                 case 'ExpiredError':
-                    return [[],[]];
+                    return [[], []];
             }
         });
 }
@@ -90,12 +88,11 @@ export const getBalances = async () => {
 export const addBalanceHistory = async (actives) => {
     const tiempoTranscurrido = Date.now();
     const hoy = new Date(tiempoTranscurrido);
-    var day= hoy.toLocaleDateString(); // "14/6/2020"
-    var balances=await getBalances()
-    console.log(balances);
-    if(balances[0].length>0 && balances[0][balances[0].length-1]===day)
-        balances[1][balances[1].length-1]=actives
-    else{
+    var day = hoy.toLocaleDateString(); // "14/6/2020"
+    var balances = await getBalances()
+    if (balances[0].length > 0 && balances[0][balances[0].length - 1] === day)
+        balances[1][balances[1].length - 1] = actives
+    else {
         balances[0].push(day)
         balances[1].push(actives)
     }
@@ -103,15 +100,49 @@ export const addBalanceHistory = async (actives) => {
         key: 'balanceHistory', // Note: Do not use underscore("_") in key!
         data: balances,
     });
-    console.log(balances)
 }
 
-export const removeBalancesHistory = async (addr) => {
+export const removeBalancesHistory = async () => {
     storage.save({
         key: 'balanceHistory', // Note: Do not use underscore("_") in key!
-        data: [[],[]],
+        data: [[], []],
     });
-    return getBalances();
+    var actives1 = [
+        {
+            "name": "BNB",
+            "value": [
+                "0.01837505",
+                0,
+                200,
+                0,
+                "/token/images/bnb_28_2.png"
+            ]
+        },
+    ]
+    addBalanceHistoryTest(actives1, "00/00/00");
+    var actives2 = [
+        {
+            "name": "BNB",
+            "value": [
+                "0.01837505",
+                0,
+                100,
+                0,
+                "/token/images/bnb_28_2.png"
+            ]
+        },
+    ]
+    addBalanceHistoryTest(actives2, "01/00/00")
+}
+
+export const addBalanceHistoryTest = async (actives, day) => {
+    var balances = await getBalances()
+    balances[0].push(day)
+    balances[1].push(actives)
+    storage.save({
+        key: 'balanceHistory', // Note: Do not use underscore("_") in key!
+        data: balances,
+    });
 }
 
 
