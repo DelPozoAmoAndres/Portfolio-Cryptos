@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
 
 import { addAddres, removeAddres, getAddress } from "../services/storageService"
@@ -7,6 +7,10 @@ import { NavBar } from '../components/navbar';
 export const Account = (props) => {
     const [address, setAddress] = useState("")
     const [listAddress, setListAddress] = useState([])
+
+    useEffect(async()=>{
+        setListAddress(await getAddress())
+    },[]);
     return (
         <SafeAreaView style={{ width: "100%", height: "100%", maxWidth: 500, alignSelf: "center" }}>
             <StatusBar />
@@ -35,7 +39,7 @@ export const Account = (props) => {
 }
 const renderAddress = ({ item }, onPress) => {
     return (
-        <View style={{ borderColor: "black", borderWidth: 2 }}>
+        <View>
             <Text>{item}</Text>
             <Button onPress={onPress} title="Delete" />
         </View>)

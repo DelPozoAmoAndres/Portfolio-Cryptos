@@ -4,7 +4,7 @@ import { Actions } from 'react-native-router-flux';
 
 export const NavBar = (props) => {
     return (
-        <View style={{ justifyContent: "space-evenly", flexDirection: "row", width: "100%", bottom: 0, position: "absolute", marginBottom: "2%" }}>
+        <View style={{ justifyContent: "space-evenly", flexDirection: "row", width: "100%", bottom: 0, position: "absolute", marginBottom: "2%", }}>
             <TouchableHighlight
                 onPress={() => Actions.feed()}>
                 {props.selected == 1 ?
