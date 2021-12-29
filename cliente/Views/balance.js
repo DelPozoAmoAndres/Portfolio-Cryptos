@@ -17,8 +17,6 @@ export const Balance = (props) => {
         var porcentage = getPorcetage(actives, balanceHistory[1])
         setPorcentage(porcentage)
         setTotal(parseFloat(getTotal(actives, props.currency)))
-        console.log(total)
-        console.log(getTotal(balanceHistory[1][balanceHistory[1].length - 2]))
     }, []);
     return (
         <SafeAreaView style={styles(theme).safeAreaView}>

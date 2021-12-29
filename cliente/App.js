@@ -33,9 +33,9 @@ export default function App() {
         <Scene key="root" hideNavBar={true} hideTabBar={false} tabs={true} tabBarPosition='bottom'>
           <Scene key="feed" component={Home} currency={currency} coins={coins} title="feed"  hideNavBar={true}
             tabBarComponent={NavBar1}/>
-          <Scene key="balance" component={Balance} actives={actives} balanceHistory={balanceHistory} initial={true} currency={currency} title="balance" hideNavBar={true}
+          <Scene key="balance" component={Balance} actives={actives} balanceHistory={balanceHistory} currency={currency} title="balance" hideNavBar={true}
             tabBarComponent={NavBar2}/>
-          <Scene key="accounts" component={Account} title="accounts" hideNavBar={true}
+          <Scene key="accounts" component={Account} title="accounts" hideNavBar={true} initial={true}
             tabBarComponent={NavBar3}/>
         </Scene>
       </Router>

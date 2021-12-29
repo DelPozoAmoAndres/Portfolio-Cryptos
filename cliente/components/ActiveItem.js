@@ -4,7 +4,6 @@ import { ThemeContext } from "../theme/theme-context";
 
 
 const ActiveItem = (props) => {
-    console.log(props)
     const item= props.item.item
     const currency=(props.currency)?props.currency:"USD"
     const {theme} = useContext(ThemeContext);
