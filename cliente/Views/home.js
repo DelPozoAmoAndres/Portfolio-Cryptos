@@ -27,7 +27,7 @@ export const Home = (props) => {
                         style={styles(theme).searchInput}
                         placeholder="Search a Coin"
                         placeholderTextColor={theme.font}
-                        onChangeText={(text) => text && setSearch(text)}
+                        onChangeText={(text) => setSearch(text)}
                     />
                 </View>
                 <FlatList
