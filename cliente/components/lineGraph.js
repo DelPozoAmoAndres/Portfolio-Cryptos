@@ -44,7 +44,7 @@ export const LineGraph = (props) => {
             data={data}
             disableTouch={true}
             >
-            <Area theme={{ gradient: { from: { color: color }, to: { color: color, opacity: 0.2 } } }} />
+            <Area theme={{ gradient: { from: { color: color }, to: { color: theme.background, opacity: 0.2 } } }} />
             <Line theme={{ stroke: { color: color, width: 1 } }} />
         </Chart>:<View/>
     )
