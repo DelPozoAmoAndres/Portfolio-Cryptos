@@ -19,7 +19,7 @@ const getIds=async(tokens)=>{
             "method": "GET"
           }).then(res=>res.json());
     for(var t in tokens){
-        var crypto=_.where(data,{symbol : tokens[t].toLowerCase()})
+        var crypto=_.where(data,{symbol : tokens[t].toLowerCase() })
         if(crypto.length>0){
             list.push(crypto[0]["id"])
         }
@@ -85,7 +85,23 @@ const getTokens=async(prices)=>{
 
 export const getCoins=async(currency)=>{
   const res = await fetch(
-    "https://api.coingecko.com/api/v3/coins/markets?vs_currency="+currency+"&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency="+currency+"&order=market_cap_desc&per_page=100&page=1&sparkline=false",{
+    "headers": {
+      "accept": "application/json",
+      "accept-language": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+      "sec-ch-ua": "\"Microsoft Edge\";v=\"95\", \"Chromium\";v=\"95\", \";Not A Brand\";v=\"99\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-site",
+      "Referer": "https://www.coingecko.com/",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "user-agent": "chrome"
+    },
+    "body": null,
+    "method": "GET"
+  }
   );
   const data = await res.json();
   return data;

@@ -1,60 +1,64 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput, Image, TextPropTypes } from 'react-native';
-import { getActives, addHistory, getPorcetage, getTotal, getPorcentageActive, deleteHistory } from '../services/balanceService';
+import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput, Image, TextPropTypes, ScrollView, RefreshControl } from 'react-native';
+import { getPorcetage, getTotal } from '../services/balanceService';
 import { NavBar } from '../components/navbar';
 import { callEther } from '../services/etherService';
 import { LineGraph } from '../components/lineGraph';
-import { random } from 'underscore';
 export const Balance = (props) => {
 
-    const [actives, setActives] = useState([]);
-    const [balanceHistory, setBalanceHistory] = useState([[], []]);
+    const actives = props.actives;
+    const balanceHistory = props.balanceHistory;
     const [porcentage, setPorcentage] = useState(0);
+    const [total, setTotal] = useState(0)
 
     useEffect(async () => {
-        var actives = await getActives();
-        setActives(actives)
-        var history = await addHistory(actives);
-        setBalanceHistory(history)
-        var porcentage = getPorcetage(actives, history[1])
+        var porcentage = getPorcetage(actives, balanceHistory[1])
         setPorcentage(porcentage)
+        setTotal(parseFloat(getTotal(actives, props.currency)))
+        console.log(total)
+        console.log(getTotal(balanceHistory[1][balanceHistory[1].length - 2]))
     }, []);
     return (
         <SafeAreaView style={{ width: "100%", height: "100%", maxWidth: 500, alignSelf: "center" }}>
             <StatusBar />
-            <View style={{ height: "10%", marginLeft: "2%", marginRight: "2%" }}>
-                <Text style={{ fontSize: 20, marginTop: 10 }}>Balance</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center" }}>
-                    <Text style={{ fontSize: 30 }}>{(props.currency === "USD" ? "$" : "€") + parseFloat(getTotal(actives, props.currency)).toFixed(2)}</Text>
-                    {porcentage >= 0 ?
-                        <Text style={{ fontSize: 18, color: "#00B589" }}>{porcentage + "%"}</Text>
-                        :
-                        <Text style={{ fontSize: 18, color: "#fc4422" }}>{porcentage + "%"}</Text>
-                    }
+                <View style={{ height: "10%", marginLeft: "2%", marginRight: "2%" }}>
+                    <Text style={{ fontSize: 20, marginTop: 10 }}>Balance</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center" }}>
+                        <Text style={{ fontSize: 30 }}>{(props.currency === "USD" ? "$" : "€") + total.toFixed(2)}</Text>
+                        {porcentage >= 0 ?
+                            <View>
+                                <Text style={{ fontSize: 18, color: "#00B589" }}>{porcentage + "%"}</Text>
+                                <Text>{(props.currency === "USD" ? "$" : "€") + (total - getTotal(balanceHistory[1][balanceHistory[1].length - 2], props.currency)).toFixed(2)}</Text>
+                            </View>
+                            :
+                            <View>
+                                <Text style={{ fontSize: 18, color: "#fc4422" }}>{porcentage + "%"}</Text>
+                                <Text>{(props.currency === "USD" ? "$" : "€") + (total - getTotal(balanceHistory[1][balanceHistory[1].length - 2], props.currency)).toFixed(2)}</Text>
+                            </View>
+                        }
 
+                    </View>
                 </View>
-            </View>
-            <View style={{ height: "20%" }}>
-                <LineGraph
-                    data={balanceHistory[1]}
-                    currency={props.currency}
+                <View style={{ height: "20%", width: "96%", marginLeft: "2%", marginRight: "2%" }}>
+                    <LineGraph
+                        data={balanceHistory[1]}
+                        currency={props.currency}
 
-                />
-            </View>
-            <View >
-                {/*<Button onPress={async () => await callEther("0xb35E7381FB2EbA8781707f1cAc14B7722Dbb8485")} title="Ether" />*/}
+                    />
+                </View>
+                <View >
+                    {/*<Button onPress={async () => await callEther("0xb35E7381FB2EbA8781707f1cAc14B7722Dbb8485")} title="Ether" />*/}
+                    <FlatList
+                        data={actives}
+                        renderItem={item => renderActives(item, props.currency)}
+                        keyExtractor={item => item.name} />
+                    {/*<Button onPress={async () => { var history = await deleteHistory(); setBalanceHistory(history) }} title="Delete Historial" />
                 <FlatList
-                    data={actives}
-                    renderItem={item => renderActives(item, props.currency)}
-                    keyExtractor={item => item.name} />
-                <Button onPress={async () => { var history = await deleteHistory(); setBalanceHistory(history) }} title="Delete Historial" />
-                {/*<FlatList
                         data={this.state.balanceHistory[1]}
                         renderItem={item => renderHistory(item, this.state.balanceHistory)}
                         keyExtractor={item => random(100)}
                     />*/}
-            </View>
-            <NavBar selected="2" />
+                </View>
         </SafeAreaView>
     );
 

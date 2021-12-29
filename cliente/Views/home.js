@@ -8,25 +8,18 @@ import {
     TextInput,
     SafeAreaView
 } from "react-native";
-import { loadDataHome } from "../services/homeService.js";
 import CoinItem from "../components/coinItem";
 import { NavBar } from "../components/navbar.js";
-import { ScrollView } from "react-native-gesture-handler";
 
 export const Home = (props) => {
-    const [coins, setCoins] = useState([]);
+    const coins=props.coins;
     const [refreshing, setRefreshing] = useState(false);
     const [search, setSearch] = useState("");
 
-    useEffect(async () => {
-        let data = await loadDataHome(props.currency)
-        setCoins(data);
-    }, []);
-
     return (
-        <SafeAreaView style={{ width: "100%", height: "100%", maxWidth: 500, alignSelf: "center" }}>
+        <SafeAreaView style={{ width: "100%", height: "99%", maxWidth: 500, alignSelf: "center" }}>
             <StatusBar />
-            <View style={{ width: "100%", height: "95%" }}>
+            <View style={{ width: "96%", height: "95%",marginLeft: "2%", marginRight: "2%" }}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Feed</Text>
                     <TextInput
@@ -54,7 +47,7 @@ export const Home = (props) => {
                     }}
                 />
             </View>
-            <NavBar selected="1" />
+            <View style={{height:"10%"}}></View>
         </SafeAreaView>
     );
 };
@@ -74,7 +67,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     list: {
-        height: 1,
+        height:100,
     },
     searchInput: {
         borderBottomWidth: 1,

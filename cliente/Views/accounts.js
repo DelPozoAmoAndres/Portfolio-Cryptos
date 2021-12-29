@@ -33,7 +33,6 @@ export const Account = (props) => {
                     renderItem={item => renderAddress(item, async () => { await removeAddres(item.item); setListAddress(await getAddress()) })}
                     keyExtractor={item => item} />
             </View>
-            <NavBar selected="3"/>
         </SafeAreaView>
     )
 }

@@ -3,24 +3,24 @@ import { getPrices } from './coinGeckoService';
 import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './storageService';
 
 export const getActives = async () => {
-    var address=await getAddress()
+    var address = await getAddress()
     var list = []
     var balances = new Map()
     var tokens = await getTokens()
     var price = await getPrices(tokens)
-    var history= await getBalanceHistory()
+    var history = await getBalanceHistory()
     for (var a in address) {
         var balance = await callBsc(address[a])
         for (var j in balance) {
             var name = balance[j].name;
             var value = balance[j].balance;
-            var img=balance[j].img;
-            var historyBalance=history[1];
-            var porcentage=getPorcentageActive(balance[j],price,historyBalance);
+            var img = balance[j].img;
+            var historyBalance = history[1];
+            var porcentage = getPorcentageActive(balance[j], price, historyBalance);
             if (balances.has(name))
-                balances.set(name, [parseFloat(balances.get(name)) + parseFloat(value), (parseFloat(balances.get(name)) + parseFloat(value.replace(",",""))) * parseFloat(price.get(name)[0]), (parseFloat(balances.get(name)) + parseFloat(value.replace(",",""))) * parseFloat(price.get(name)[1]),porcentage,img])
+                balances.set(name, [parseFloat(balances.get(name)) + parseFloat(value), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[0]), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[1]), porcentage, img])
             else
-                balances.set(name, [value, parseFloat(value.replace(",","")) * parseFloat(price.get(name)[0]), parseFloat(value.replace(",","")) * parseFloat(price.get(name)[1]),porcentage,img])
+                balances.set(name, [value, parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[0]), parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[1]), porcentage, img])
         }
     }
     list = Array.from(balances, ([name, value]) => ({ name, value }));
@@ -35,50 +35,51 @@ export const getTotal = (activos, currency = "USD") => {
     for (var i in activos) {
         sum += activos[i].value[index]
     }
-    return sum ;
+    return sum;
 }
 
 const getTokens = async () => {
     var tokens = []
-    var address=await getAddress()
+    var address = await getAddress()
     for (var i in address) {
         var balance = await callBsc(address[i])
         for (var j in balance) {
-            if (!tokens.includes(balance[j].name))
+            if (!tokens.includes(balance[j].name)) {
                 tokens.push(balance[j].name)
+            }
         }
     }
     return tokens
 }
 
-export const getPorcetage = (actives,balanceHistory)=>{
-    var totalUSD=getTotal(actives)
-    if(balanceHistory.length<=1)
+export const getPorcetage = (actives, balanceHistory) => {
+    var totalUSD = getTotal(actives)
+    if (balanceHistory.length <= 1)
         return 0;
-    var totalUSDHistory=getTotal(balanceHistory[balanceHistory.length-2])
-    return ((totalUSD-totalUSDHistory)/totalUSDHistory).toFixed(2);
+    var totalUSDHistory = getTotal(balanceHistory[balanceHistory.length - 2])
+    return ((totalUSD - totalUSDHistory) / totalUSDHistory).toFixed(2);
 }
 
-export const getBalanceHistory = async()=>{
+export const getBalanceHistory = async () => {
     return await getBalances(true)
 }
 
-export const deleteHistory = async () =>{
+export const deleteHistory = async () => {
     await removeBalancesHistory();
     return await getBalanceHistory()
 }
 
-export const addHistory= async(actives)=>{
+export const addHistory = async (actives) => {
     await addBalanceHistory(actives)
     return await getBalanceHistory()
 }
 
-export const getPorcentageActive= (item,price,history)=>{
-    if(history.length>1){
-        for(var i=0;i<history[history.length-2].length;i++)
-            if(history[history.length-2][i].name===item.name){
-                item.balance=item.balance.replace(",","")
-                return (parseFloat(item.balance)*parseFloat(price.get(item.name)[1])-history[history.length-2][i].value[2])/history[history.length-2][i].value[2]
+export const getPorcentageActive = (item, price, history) => {
+    if (history.length > 1) {
+        for (var i = 0; i < history[history.length - 2].length; i++)
+            if (history[history.length - 2][i].name === item.name) {
+                item.balance = item.balance.replace(",", "")
+                return (parseFloat(item.balance) * parseFloat(price.get(item.name)[1]) - history[history.length - 2][i].value[2]) / history[history.length - 2][i].value[2]
             }
         return 0
     }
