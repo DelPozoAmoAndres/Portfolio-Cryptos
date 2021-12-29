@@ -1,26 +1,28 @@
-import React from "react";
+import React,{useContext} from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
+import {ThemeContext} from "../theme/theme-context"
 
 const CoinItem = (props) => {
   let coin=props.coin
   let currency=props.currency
+  const { theme} = useContext(ThemeContext);
   return(
-  <View style={styles.containerItem}>
-    <View style={styles.coinName}>
-      <Image source={{ uri: coin.image }} style={styles.image} />
-      <View style={styles.containerNames}>
-        <Text style={styles.text}>{coin.name}</Text>
-        <Text style={styles.textSymbol}>{coin.symbol}</Text>
+  <View style={styles(theme).containerItem}>
+    <View style={styles(theme).coinName}>
+      <Image source={{ uri: coin.image }} style={styles(theme).image} />
+      <View style={styles(theme).containerNames}>
+        <Text style={styles(theme).text}>{coin.name}</Text>
+        <Text style={styles(theme).textSymbol}>{coin.symbol}</Text>
       </View>
     </View>
     <View>
-      <Text style={styles.textPrice}>{(currency==="USD")?"$":"€"}{coin.current_price}</Text>
+      <Text style={styles(theme).textPrice}>{(currency==="USD")?"$":"€"}{coin.current_price}</Text>
       <Text
         style={[
-          styles.pricePercentage,
+          styles(theme).pricePercentage,
           coin.price_change_percentage_24h > 0
-            ? styles.priceUp
-            : styles.priceDown,
+            ? styles(theme).priceUp
+            : styles(theme).priceDown,
         ]}
       >
         {(coin.price_change_percentage_24h)?coin.price_change_percentage_24h.toFixed(2):"-"}%
@@ -29,8 +31,9 @@ const CoinItem = (props) => {
   </View>)
 };
 
-const styles = StyleSheet.create({
+const styles = (theme) =>StyleSheet.create({
   containerItem: {
+    backgroundColor:theme.background,
     paddingTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -39,29 +42,32 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   coinName: {
+    color:theme.font,
     flexDirection: "row",
   },
   text: {
+    color:theme.font
   },
   textPrice: {
+    color:theme.font,
     fontWeight: "bold",
   },
   pricePercentage: {
     textAlign: "right",
   },
   priceUp: {
-    color: "#00B589",
+    color: theme.green,
   },
   priceDown: {
-    color: "#fc4422",
+    color: theme.red,
+  },
+  textSymbol: {
+    color:theme.font,
+    textTransform: "uppercase",
   },
   image: {
     width: 30,
     height: 30,
-  },
-  textSymbol: {
-    color: "#434343",
-    textTransform: "uppercase",
   },
 });
 

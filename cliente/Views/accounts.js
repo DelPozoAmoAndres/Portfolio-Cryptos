@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
-
-import { addAddres, removeAddres, getAddress } from "../services/storageService"
-import { NavBar } from '../components/navbar';
+import { Switch } from 'react-native-gesture-handler';
+import { addAddres, removeAddres, getAddress, changeDarkMode } from "../services/StorageService"
+import { ThemeContext } from '../theme/theme-context';
 
 export const Account = (props) => {
     const [address, setAddress] = useState("")
     const [listAddress, setListAddress] = useState([])
 
-    useEffect(async()=>{
+    useEffect(async () => {
         setListAddress(await getAddress())
-    },[]);
+    }, []);
+
+    const { dark, theme, toggle } = useContext(ThemeContext);
+
     return (
         <SafeAreaView style={{ width: "100%", height: "100%", maxWidth: 500, alignSelf: "center" }}>
             <StatusBar />
@@ -18,8 +21,8 @@ export const Account = (props) => {
                 <Text style={{ fontSize: 20, }}>Cuentas</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center" }}>
                     <Text style={{ fontSize: 30, }}>{"Numero de cuentas"}</Text>
-                    <Text style={{ fontSize: 18}}>{+listAddress.length}</Text>
-                     
+                    <Text style={{ fontSize: 18 }}>{+listAddress.length}</Text>
+
 
                 </View>
             </View>
@@ -33,6 +36,10 @@ export const Account = (props) => {
                     renderItem={item => renderAddress(item, async () => { await removeAddres(item.item); setListAddress(await getAddress()) })}
                     keyExtractor={item => item} />
             </View>
+            <Switch
+                trackColor={{ false: "#767577", true: "#ccc" }}
+                thumbColor={dark ? "#fff" : "#f4f3f4"}
+                onChange={toggle} value={dark} />
         </SafeAreaView>
     )
 }

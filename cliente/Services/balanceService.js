@@ -1,6 +1,6 @@
-import { callBsc } from './bscService';
-import { getPrices } from './coinGeckoService';
-import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './storageService';
+import { callBsc } from './BscService';
+import { getPrices } from './CoinGeckoService';
+import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './StorageService';
 
 export const getActives = async () => {
     var address = await getAddress()

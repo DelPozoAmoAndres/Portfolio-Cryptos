@@ -1,7 +1,7 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import _ from "underscore"
-import { getBalanceHistory } from './balanceService';
+import { getBalanceHistory } from './BalanceService';
 
 const storage = new Storage({
     // maximum capacity, default 1000 key-ids
@@ -40,7 +40,9 @@ export const addAddres = async (addr) => {
 export const removeAddres = async (addr) => {
     var address = await getAddress()
     if (address.includes(addr)) {
-        address = _.where(address, { addr })
+        address = address.filter(function (a) {
+            return a !== addr;
+        });
         storage.save({
             key: 'address', // Note: Do not use underscore("_") in key!
             data: address,
@@ -66,12 +68,12 @@ export const getAddress = async () => {
         });
 }
 
-export const getBalances = async (cloned=false) => {
-    const clone=(items)=>items.map(item => (Array.isArray(item) ? clone(item) : item));
+export const getBalances = async (cloned = false) => {
+    const clone = (items) => items.map(item => (Array.isArray(item) ? clone(item) : item));
     return storage
         .load({
             key: 'balanceHistory',
-        }).then(res =>cloned?clone(res):res)
+        }).then(res => cloned ? clone(res) : res)
         .catch(err => {
             // any exception including data not found
             // goes to catch()
@@ -100,7 +102,6 @@ export const addBalanceHistory = async (actives) => {
         key: 'balanceHistory', // Note: Do not use underscore("_") in key!
         data: balances,
     });
-    return await getBalanceHistory();
 }
 
 export const removeBalancesHistory = async () => {

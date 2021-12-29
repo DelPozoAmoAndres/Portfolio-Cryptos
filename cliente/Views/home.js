@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
     View,
     Text,
@@ -8,29 +8,30 @@ import {
     TextInput,
     SafeAreaView
 } from "react-native";
-import CoinItem from "../components/coinItem";
-import { NavBar } from "../components/navbar.js";
+import CoinItem from "../components/CoinItem";
+import { ThemeContext } from "../theme/theme-context";
 
 export const Home = (props) => {
-    const coins=props.coins;
+    const coins = props.coins;
     const [refreshing, setRefreshing] = useState(false);
     const [search, setSearch] = useState("");
+    const { theme } = useContext(ThemeContext);
 
     return (
-        <SafeAreaView style={{ width: "100%", height: "99%", maxWidth: 500, alignSelf: "center" }}>
+        <SafeAreaView style={styles(theme).safeAreaView}>
             <StatusBar />
-            <View style={{ width: "96%", height: "95%",marginLeft: "2%", marginRight: "2%" }}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Feed</Text>
+            <View style={styles(theme).container}>
+                <View style={styles(theme).header}>
+                    <Text style={styles(theme).title}>Feed</Text>
                     <TextInput
-                        style={styles.searchInput}
+                        style={styles(theme).searchInput}
                         placeholder="Search a Coin"
-                        placeholderTextColor="#858585"
+                        placeholderTextColor={theme.font}
                         onChangeText={(text) => text && setSearch(text)}
                     />
                 </View>
                 <FlatList
-                    style={styles.list}
+                    style={styles(theme).list}
                     data={coins.filter(
                         (coin) =>
                             coin.name.toLowerCase().includes(search.toLocaleLowerCase()) ||
@@ -47,31 +48,44 @@ export const Home = (props) => {
                     }}
                 />
             </View>
-            <View style={{height:"10%"}}></View>
+            <View style={{ height: "10%" }}></View>
         </SafeAreaView>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 10,
-    },
-    title: {
-        fontSize: 20,
-        marginTop: 10,
-    },
-    list: {
-        height:100,
-    },
-    searchInput: {
-        borderBottomWidth: 1,
-        width: "40%",
-        textAlign: "center",
-    },
-})
+const styles = (theme) =>
+    StyleSheet.create({
+        safeAreaView: {
+            width: "100%",
+            height: "100%",
+            maxWidth: 500,
+            alignSelf: "center",
+            backgroundColor: theme.background
+        },
+        header: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+        },
+        title: {
+            color: theme.font,
+            fontSize: 20,
+            marginTop: 10,
+        },
+        container: {
+            width: "96%",
+            height: "95%",
+            marginLeft: "2%",
+            marginRight: "2%"
+        },
+        list: {
+            height: 100,
+        },
+        searchInput: {
+            color: theme.font,
+            borderColor: theme.font,
+            borderBottomWidth: 1,
+            width: "40%",
+            textAlign: "center",
+        },
+    })
