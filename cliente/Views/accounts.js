@@ -1,15 +1,19 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
-import { addAddres, removeAddres, getAddress, changeDarkMode } from "../services/StorageService"
+import { set } from 'react-native-reanimated';
+import { addAddres, removeAddres, getAddress, changeDarkMode, getXpubs, addXpubs, removeXpubs } from "../services/StorageService"
 import { ThemeContext } from '../theme/theme-context';
 
 export const Account = (props) => {
     const [address, setAddress] = useState("")
+    const [xpub, setXpub] = useState("")
     const [listAddress, setListAddress] = useState([])
+    const [listXpbus, setListXpub] = useState([])
 
     useEffect(async () => {
         setListAddress(await getAddress())
+        setListXpub(await getXpubs())
     }, []);
 
     const { dark, theme, toggle } = useContext(ThemeContext);
@@ -21,14 +25,26 @@ export const Account = (props) => {
                 <View style={styles(theme).top}>
                     <Text style={styles(theme).title}>Cuentas</Text>
                 </View>
+                <Text style={styles(theme).text}>Address (BSC/ERC20/RONIN)</Text>
                 <View style={styles(theme).add}>
                     <TextInput style={styles(theme).input} value={address} onChangeText={(value) => setAddress(value)}></TextInput>
                     <Button onPress={async () => { await addAddres(address); setAddress(""); setListAddress(await getAddress()) }} title="+" />
                 </View>
+                <Text style={styles(theme).text}>XPUB/YPUB/ZPUB (BTC)</Text>
+                <View style={styles(theme).add}>
+                    <TextInput style={styles(theme).input} value={xpub} onChangeText={(value) => setXpub(value)}></TextInput>
+                    <Button onPress={async () => { await addXpubs(xpub); setXpub(""); setListXpub(await getXpubs()) }} title="+" />
+                </View>
                 <View style={styles(theme).list}>
                     <FlatList
                         data={listAddress}
-                        renderItem={item => renderAddress(item, theme, async () => { await removeAddres(item.item); setListAddress(await getAddress()) })}
+                        renderItem={item => renderItem(item, theme, async () => { await removeAddres(item.item); setListAddress(await getAddress()) })}
+                        keyExtractor={item => item} />
+                </View>
+                <View style={styles(theme).list}>
+                    <FlatList
+                        data={listXpbus}
+                        renderItem={item => renderItem(item, theme, async () => { await removeXpubs(item.item); setListXpub(await getXpubs()) })}
                         keyExtractor={item => item} />
                 </View>
                 <View style={styles(theme).switch}>
@@ -43,7 +59,7 @@ export const Account = (props) => {
         </SafeAreaView>
     )
 }
-const renderAddress = ({ item }, theme, onPress) => {
+const renderItem = ({ item }, theme, onPress) => {
     return (
         <View style={styles(theme).containerItem}>
             <Text style={styles(theme).text}>{item}</Text>
@@ -60,13 +76,13 @@ const styles = (theme) => StyleSheet.create({
         alignSelf: "center",
         backgroundColor: theme.background
     },
-    container:{
+    container: {
         marginLeft: "2%",
         marginRight: "2%",
     },
     top: {
         alignContent: "center",
-        
+
     },
     add: {
         flexDirection: "row",

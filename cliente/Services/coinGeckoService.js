@@ -107,7 +107,6 @@ export const getCoins = async (currency) => {
     );
     const data1 = await res.json();
     data=[...data,...data1];
-    console.log(data1)
   }
   return data;
 }

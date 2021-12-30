@@ -1,6 +1,8 @@
 import { callBsc } from './BscService';
+import { callBtcWithXPub } from './BtcService';
 import { getPrices } from './CoinGeckoService';
-import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory } from './StorageService';
+import { callRonin } from './RoninService';
+import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory,getXpubs } from './StorageService';
 
 export const getActives = async () => {
     var address = await getAddress()
@@ -8,23 +10,39 @@ export const getActives = async () => {
     var balances = new Map()
     var tokens = await getTokens()
     var price = await getPrices(tokens)
-    var history = await getBalanceHistory()
+    var history = await getBalanceHistory();
     for (var a in address) {
-        var balance = await callBsc(address[a])
-        for (var j in balance) {
-            var name = balance[j].name;
-            var value = balance[j].balance;
-            var img = balance[j].img;
-            var historyBalance = history[1];
-            var porcentage = getPorcentageActive(balance[j], price, historyBalance);
-            if (balances.has(name))
-                balances.set(name, [parseFloat(balances.get(name)) + parseFloat(value), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[0]), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[1]), porcentage, img])
-            else
-                balances.set(name, [value, parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[0]), parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[1]), porcentage, img])
-        }
+        var balanceBSC = await callBsc(address[a])
+        var balanceRonin = await callRonin(address[a])
+        var balance=[...balanceBSC,...balanceRonin]
+        balances=getActivesOfBalance(balance,price,history)
+    }
+    var xpubs=await getXpubs()
+    console.log(xpubs)
+    for (var x in xpubs){
+        var balance = await callBtcWithXPub(xpubs[x]);
+        balances=[...balances,...getActivesOfBalance(balance,price,history)]
+        console.log(balances)
     }
     list = Array.from(balances, ([name, value]) => ({ name, value }));
     return list;
+}
+
+const getActivesOfBalance=(balance,price,history)=>{
+    var balances = new Map();
+    for (var j in balance) {
+        var name = balance[j].name;
+        var value = balance[j].balance;
+        var img = balance[j].img;
+        var historyBalance=history[1];
+        var porcentage = getPorcentageActive(balance[j], price, historyBalance);
+        console.log(balance)
+        if (balances.has(name))
+            balances.set(name, [parseFloat(balances.get(name)) + parseFloat(value), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[0]), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[1]), porcentage, img])
+        else
+            balances.set(name, [value, parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[0]), parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[1]), porcentage, img])
+    }
+    return balances;
 }
 
 export const getTotal = (activos, currency = "USD") => {
@@ -41,14 +59,19 @@ export const getTotal = (activos, currency = "USD") => {
 const getTokens = async () => {
     var tokens = []
     var address = await getAddress()
+    var xpubs = await getXpubs()
     for (var i in address) {
-        var balance = await callBsc(address[i])
+        var balance1 = await callBsc(address[i])
+        var balance2 = await callRonin(address[i])
+        var balance= [...balance1,...balance2]
         for (var j in balance) {
             if (!tokens.includes(balance[j].name)) {
                 tokens.push(balance[j].name)
             }
         }
     }
+    if(xpubs.length>0)
+        tokens.push("BTC")
     return tokens
 }
 

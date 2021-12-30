@@ -68,6 +68,49 @@ export const getAddress = async () => {
         });
 }
 
+export const addXpubs = async (xpub) => {
+    var xpubs = await getXpubs()
+    if (xpub !== "" && !xpubs.includes(xpub)) {
+        xpubs.push(xpub)
+        storage.save({
+            key: 'xpubs', // Note: Do not use underscore("_") in key!
+            data: xpubs,
+        });
+    }
+}
+
+export const removeXpubs = async (xpub) => {
+    var xpubs = await getXpubs()
+    if (xpubs.includes(xpub)) {
+        xpubs = xpubs.filter(function (x) {
+            return x !== xpub;
+        });
+        storage.save({
+            key: 'xpubs', // Note: Do not use underscore("_") in key!
+            data: xpubs,
+        });
+    }
+}
+
+export const getXpubs = async () => {
+    return storage
+        .load({
+            key: 'xpubs',
+        }).then(res => res)
+        .catch(err => {
+            // any exception including data not found
+            // goes to catch()
+            console.warn(err.message);
+            switch (err.name) {
+                case 'NotFoundError':
+                    return [];
+                case 'ExpiredError':
+                    return [];
+            }
+        });
+}
+
+
 export const getBalances = async (cloned = false) => {
     const clone = (items) => items.map(item => (Array.isArray(item) ? clone(item) : item));
     return storage

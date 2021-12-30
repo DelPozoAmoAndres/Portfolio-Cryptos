@@ -1,26 +1,34 @@
-import React,{ useContext } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React, { useContext } from "react";
+import { View, Text, StyleSheet, Image, Platform } from "react-native";
 import { ThemeContext } from "../theme/theme-context";
-
+import { SvgUri } from 'react-native-svg';
 
 const ActiveItem = (props) => {
-    const item= props.item.item
-    const currency=(props.currency)?props.currency:"USD"
-    const {theme} = useContext(ThemeContext);
+    const item = props.item.item
+    const currency = (props.currency) ? props.currency : "USD"
+    const { theme } = useContext(ThemeContext);
     var index = 2
     if (currency === "EUR")
         index = 1
     var porcentage = parseFloat(item.value[3]).toFixed(2)
+    const parts=item.value[4].split(".")
+    const ext=parts[parts.length-1]
     return (
         <View style={styles(theme).container}>
             <View style={styles(theme).containerName}>
-                <Image style={styles(theme).image} source={{
-                    uri: "https://bscscan.com" + item.value[4],
-                    method: 'GET',
-                    headers: {
-                        "user-agent": "chrome"
-                    },
-                }} />
+                {ext !== "svg" || Platform.OS=="web" ?
+                    <Image style={styles(theme).image} source={{
+                        uri: item.value[4],
+                        method: 'GET',
+                        headers: {
+                            "user-agent": "chrome"
+                        },
+                    }} /> :
+                    <SvgUri
+                        style={styles(theme).image}
+                        uri={item.value[4]}
+                    />}
+
                 <Text> </Text>
                 <Text style={styles(theme).name}>{item.name}</Text>
             </View>
@@ -43,7 +51,7 @@ const ActiveItem = (props) => {
         </View >)
 }
 
-const styles = (theme)=>StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         paddingLeft: "2%",
         paddingRight: "2%",
@@ -65,26 +73,26 @@ const styles = (theme)=>StyleSheet.create({
         alignSelf: "flex-end",
         justifyContent: "space-evenly"
     },
-    name:{
-        color:theme.font
+    name: {
+        color: theme.font
     },
-    amount:{
-        color:theme.font
+    amount: {
+        color: theme.font
     },
-    value:{
+    value: {
         fontWeight: "bold",
-        color:theme.font
+        color: theme.font
     },
-    porcentageUp:{
-        color:theme.green
+    porcentageUp: {
+        color: theme.green
     },
-    porcentageDown:{
-        color:theme.red
+    porcentageDown: {
+        color: theme.red
     },
     image: {
         width: 30,
         height: 30,
-      },
+    },
 
 });
 

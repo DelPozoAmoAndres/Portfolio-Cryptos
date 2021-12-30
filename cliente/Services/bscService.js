@@ -53,13 +53,15 @@ const parseData = (data) => {
             .replace("<span data-toggle='tooltip' title='","")
             .replace("'><font color=''>",",")
             .replace("...</font></span>","")
+            .replace("$","")
+            .replace("<span class='text-secondary'>",";")
             .split(";")
-        if(output[i].length==9 && parseFloat(output[i][5])>0){
+        if(output[i].length>6 && parseFloat(output[i][6])>0){
             if(output[i][4].split(",").length>1)
                 output[i][4]=output[i][4].split(",")[0]
             if(output[i][4]==="BSC-USD")
                 output[i][4]="USDT"
-            list.push({name:output[i][4],balance:output[i][5],img:output[i][0]})
+            list.push({name:output[i][4],balance:output[i][5],img:"https://bscscan.com" + output[i][0]})
         }
     }
     return list
