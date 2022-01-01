@@ -5,39 +5,35 @@ import { SvgUri } from 'react-native-svg';
 
 const ActiveItem = (props) => {
     const item = props.item.item
+    const balance= item.getAmount();
+    const crypto=item.getCrypto()
+    const value= item.getValue()
     const currency = (props.currency) ? props.currency : "USD"
     const { theme } = useContext(ThemeContext);
     var index = 2
     if (currency === "EUR")
         index = 1
-    var porcentage = parseFloat(item.value[3]).toFixed(2)
-    const parts=item.value[4].split(".")
-    const ext=parts[parts.length-1]
+    var porcentage = 0
     return (
         <View style={styles(theme).container}>
             <View style={styles(theme).containerName}>
-                {ext !== "svg" || Platform.OS=="web" ?
                     <Image style={styles(theme).image} source={{
-                        uri: item.value[4],
+                        uri: crypto.getImage(),
                         method: 'GET',
                         headers: {
                             "user-agent": "chrome"
                         },
-                    }} /> :
-                    <SvgUri
-                        style={styles(theme).image}
-                        uri={item.value[4]}
-                    />}
+                    }} /> 
 
                 <Text> </Text>
-                <Text style={styles(theme).name}>{item.name}</Text>
+                <Text style={styles(theme).name}>{crypto.getName()}</Text>
             </View>
             <View>
                 <View style={styles(theme).containerAmount}>
-                    <Text style={styles(theme).amount}>{item.value[0]}</Text>
+                    <Text style={styles(theme).amount}>{balance}</Text>
                 </View>
                 <View style={styles(theme).containerPorcentage}>
-                    <Text style={styles(theme).value}>{(currency === "USD" ? "$" : "€") + parseFloat(item.value[index]).toFixed(2)}</Text>
+                    <Text style={styles(theme).value}>{(currency === "USD" ? "$" : "€") + value.toFixed(2)}</Text>
                     <Text> </Text>
                     {porcentage > 0
                         ?

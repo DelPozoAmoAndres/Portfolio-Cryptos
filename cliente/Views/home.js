@@ -8,6 +8,7 @@ import {
     TextInput,
     SafeAreaView
 } from "react-native";
+import { random } from "underscore";
 import CoinItem from "../components/CoinItem";
 import { ThemeContext } from "../theme/theme-context";
 
@@ -39,6 +40,7 @@ export const Home = (props) => {
                     )}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => <CoinItem coin={item} currency={props.currency} />}
+                    keyExtractor={item=>item.getId()+item.getName()+random(1000)}
                     refreshing={refreshing}
                     onRefresh={async () => {
                         setRefreshing(true);
@@ -74,7 +76,7 @@ const styles = (theme) =>
         },
         container: {
             width: "96%",
-            height: "95%",
+            height: "94%",
             marginLeft: "2%",
             marginRight: "2%"
         },

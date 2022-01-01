@@ -61,17 +61,8 @@ const parseData = (data) => {
                 output[i][4]=output[i][4].split(",")[0]
             if(output[i][4]==="BSC-USD")
                 output[i][4]="USDT"
-            list.push({name:output[i][4],balance:output[i][5],img:"https://bscscan.com" + output[i][0]})
+            list.push({name:output[i][4],balance:output[i][5]})
         }
     }
     return list
-}
-
-const checkToken = (token) => {
-    var num = parseInt(token)
-    var str = num.toString()
-    if (str === "NaN")
-        return true
-    else
-        return false
 }

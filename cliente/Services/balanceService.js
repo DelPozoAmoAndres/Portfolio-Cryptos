@@ -1,80 +1,36 @@
-import { callBsc } from './BscService';
-import { callBtcWithXPub } from './BtcService';
-import { getPrices } from './CoinGeckoService';
-import { callRonin } from './RoninService';
-import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory,getXpubs } from './StorageService';
+import { callBsc } from './calls/BscService';
+import { callBtcWithXPub } from './calls/BtcService';
+import { callEther } from './calls/EtherService';
+import { callRonin } from './calls/RoninService';
+import { addBalanceHistory, getAddress, getBalances, removeBalancesHistory, getXpubs, getAccounts } from './StorageService';
+import Balance from '../Model/entities/Balance';
 
-export const getActives = async () => {
-    var address = await getAddress()
+export const getBalanceService = async (address, gestorCrypto) => {
     var list = []
-    var balances = new Map()
-    var tokens = await getTokens()
-    var price = await getPrices(tokens)
-    var history = await getBalanceHistory();
-    for (var a in address) {
-        var balanceBSC = await callBsc(address[a])
-        var balanceRonin = await callRonin(address[a])
-        var balance=[...balanceBSC,...balanceRonin]
-        balances=getActivesOfBalance(balance,price,history)
+    var balances = []
+    if (address.match(/0x.*/)) {
+        const bscBalance = await callBsc(address);
+        const roninBalance = await callRonin(address);
+        balances = [...bscBalance, ...roninBalance]
     }
-    var xpubs=await getXpubs()
-    console.log(xpubs)
-    for (var x in xpubs){
-        var balance = await callBtcWithXPub(xpubs[x]);
-        balances=[...balances,...getActivesOfBalance(balance,price,history)]
-        console.log(balances)
+    else {
+        balances = await callBtcWithXPub(address)
     }
-    list = Array.from(balances, ([name, value]) => ({ name, value }));
+    for (var b in balances) {
+        list.push(new Balance(gestorCrypto.getCrypto(balances[b].name), balances[b].balance))
+    }
+    //const etherBalance=callEther(address);
     return list;
 }
-
-const getActivesOfBalance=(balance,price,history)=>{
-    var balances = new Map();
-    for (var j in balance) {
-        var name = balance[j].name;
-        var value = balance[j].balance;
-        var img = balance[j].img;
-        var historyBalance=history[1];
-        var porcentage = getPorcentageActive(balance[j], price, historyBalance);
-        console.log(balance)
-        if (balances.has(name))
-            balances.set(name, [parseFloat(balances.get(name)) + parseFloat(value), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[0]), (parseFloat(balances.get(name)) + parseFloat(value.replace(",", ""))) * parseFloat(price.get(name)[1]), porcentage, img])
-        else
-            balances.set(name, [value, parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[0]), parseFloat(value.replace(",", "")) * parseFloat(price.get(name)[1]), porcentage, img])
-    }
-    return balances;
-}
-
-export const getTotal = (activos, currency = "USD") => {
-    var index = 2;
-    if (currency === "EUR")
-        index = 1
+export const getTotal = (activos) => {
     var sum = 0;
     for (var i in activos) {
-        sum += activos[i].value[index]
+        if(activos[i] instanceof Balance)
+            sum += parseFloat(activos[i].getValue())
     }
     return sum;
 }
-
-const getTokens = async () => {
-    var tokens = []
-    var address = await getAddress()
-    var xpubs = await getXpubs()
-    for (var i in address) {
-        var balance1 = await callBsc(address[i])
-        var balance2 = await callRonin(address[i])
-        var balance= [...balance1,...balance2]
-        for (var j in balance) {
-            if (!tokens.includes(balance[j].name)) {
-                tokens.push(balance[j].name)
-            }
-        }
-    }
-    if(xpubs.length>0)
-        tokens.push("BTC")
-    return tokens
-}
-
+/*
 export const getPorcetage = (actives, balanceHistory) => {
     var totalUSD = getTotal(actives)
     if (balanceHistory.length <= 1)
@@ -109,3 +65,12 @@ export const getPorcentageActive = (item, price, history) => {
     else
         return 0
 }
+
+export const getAddressByName = async (name) => {
+    const accounts = await getAccounts();
+    for (var a in accounts) {
+        if (name === accounts[a].name)
+            return accounts[a]
+    }
+    return {}
+}*/

@@ -22,8 +22,7 @@ export const callBtcWithXPub = async (xpub) => {
 }
 
 const parseData = (value) => {
-    console.log(value)
     var balance = value["balance"].amount
     var name = value["balance"].unit
-    return [{ name: name, balance: balance, img: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" }]
+    return [{ name: name, balance: balance}]
 }

@@ -2,18 +2,21 @@ import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView, StatusBar, TextInput } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { set } from 'react-native-reanimated';
+import { saveAccountDB } from '../DB/DB_Accounts';
 import { addAddres, removeAddres, getAddress, changeDarkMode, getXpubs, addXpubs, removeXpubs } from "../services/StorageService"
 import { ThemeContext } from '../theme/theme-context';
+import ManualAccount from '../Model/accounts/ManualAccount';
 
-export const Account = (props) => {
+export const Profile = (props) => {
+    var manager=props.manager;
     const [address, setAddress] = useState("")
     const [xpub, setXpub] = useState("")
     const [listAddress, setListAddress] = useState([])
     const [listXpbus, setListXpub] = useState([])
+    const [name,setName]=useState("")
 
     useEffect(async () => {
-        setListAddress(await getAddress())
-        setListXpub(await getXpubs())
+        setListAddress(manager.getListAccounts())
     }, []);
 
     const { dark, theme, toggle } = useContext(ThemeContext);
@@ -25,27 +28,23 @@ export const Account = (props) => {
                 <View style={styles(theme).top}>
                     <Text style={styles(theme).title}>Cuentas</Text>
                 </View>
+                <Text style={styles(theme).text}>Nombre de la wallet</Text>
+                <TextInput style={styles(theme).input} value={name} onChangeText={(value) => setName(value)}></TextInput>
                 <Text style={styles(theme).text}>Address (BSC/ERC20/RONIN)</Text>
                 <View style={styles(theme).add}>
                     <TextInput style={styles(theme).input} value={address} onChangeText={(value) => setAddress(value)}></TextInput>
-                    <Button onPress={async () => { await addAddres(address); setAddress(""); setListAddress(await getAddress()) }} title="+" />
+                    <Button onPress={async () => { await manager.addAccount(await ManualAccount.init(name,address,manager.getGestorCrypto())); setAddress("");setName("");setListAddress(await manager.getListAccounts()) }} title="+" />
                 </View>
                 <Text style={styles(theme).text}>XPUB/YPUB/ZPUB (BTC)</Text>
                 <View style={styles(theme).add}>
                     <TextInput style={styles(theme).input} value={xpub} onChangeText={(value) => setXpub(value)}></TextInput>
-                    <Button onPress={async () => { await addXpubs(xpub); setXpub(""); setListXpub(await getXpubs()) }} title="+" />
+                    <Button onPress={async () => {/* await addXpubs(name,xpub); setXpub(""); setName("");setListXpub(await getXpubs()) */}} title="+" />
                 </View>
                 <View style={styles(theme).list}>
                     <FlatList
                         data={listAddress}
-                        renderItem={item => renderItem(item, theme, async () => { await removeAddres(item.item); setListAddress(await getAddress()) })}
-                        keyExtractor={item => item} />
-                </View>
-                <View style={styles(theme).list}>
-                    <FlatList
-                        data={listXpbus}
-                        renderItem={item => renderItem(item, theme, async () => { await removeXpubs(item.item); setListXpub(await getXpubs()) })}
-                        keyExtractor={item => item} />
+                        renderItem={item => renderItem(item, theme, async () => {await manager.removeAccount(item.item.getAddress()); setListAddress(await manager.getListAccounts())})}
+                        keyExtractor={item => item.name} />
                 </View>
                 <View style={styles(theme).switch}>
                     <Text style={styles(theme).text}>DarkMode</Text>
@@ -62,7 +61,7 @@ export const Account = (props) => {
 const renderItem = ({ item }, theme, onPress) => {
     return (
         <View style={styles(theme).containerItem}>
-            <Text style={styles(theme).text}>{item}</Text>
+            <Text style={styles(theme).text}>{item.name}</Text>
             <Button onPress={onPress} title="X" />
         </View>)
 
@@ -112,7 +111,8 @@ const styles = (theme) => StyleSheet.create({
         marginBottom: "5%"
     },
     text: {
-        color: theme.font
+        color: theme.font,
+        width: "90%"
     },
     switch: {
         flexDirection: "row",

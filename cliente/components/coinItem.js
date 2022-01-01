@@ -9,23 +9,23 @@ const CoinItem = (props) => {
   return(
   <View style={styles(theme).containerItem}>
     <View style={styles(theme).coinName}>
-      <Image source={{ uri: coin.image }} style={styles(theme).image} />
+      <Image source={{ uri: coin.img }} style={styles(theme).image} />
       <View style={styles(theme).containerNames}>
         <Text style={styles(theme).text}>{coin.name}</Text>
         <Text style={styles(theme).textSymbol}>{coin.symbol}</Text>
       </View>
     </View>
     <View>
-      <Text style={styles(theme).textPrice}>{(currency==="USD")?"$":"€"}{coin.current_price}</Text>
+      <Text style={styles(theme).textPrice}>{(currency==="USD")?"$":"€"}{coin.price}</Text>
       <Text
         style={[
           styles(theme).pricePercentage,
-          coin.price_change_percentage_24h > 0
+          coin.porcentage > 0
             ? styles(theme).priceUp
             : styles(theme).priceDown,
         ]}
       >
-        {(coin.price_change_percentage_24h)?coin.price_change_percentage_24h.toFixed(2):"-"}%
+        {(coin.porcentage)?coin.porcentage.toFixed(2):"-"}%
       </Text>
     </View>
   </View>)

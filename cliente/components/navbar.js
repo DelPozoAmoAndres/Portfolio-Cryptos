@@ -112,10 +112,12 @@ const styles = (theme) => StyleSheet.create({
     container: {
         justifyContent: "space-evenly",
         flexDirection: "row",
-        width: "100%",
         bottom: 0,
         position: "absolute",
+        width:"100%",
         marginBottom: "2%",
+        maxWidth: 500,
+        alignSelf: "center",
         backgroundColor: theme.background
     },
     image: {

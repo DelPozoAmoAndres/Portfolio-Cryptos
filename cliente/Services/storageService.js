@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import _ from "underscore"
 import { getBalanceHistory } from './BalanceService';
 
-const storage = new Storage({
+export const storage = new Storage({
     // maximum capacity, default 1000 key-ids
     size: 1000,
 
@@ -25,91 +25,6 @@ const storage = new Storage({
         // we'll talk about the details later.
     }
 });
-
-export const addAddres = async (addr) => {
-    var address = await getAddress()
-    if (addr !== "" && !address.includes(addr)) {
-        address.push(addr)
-        storage.save({
-            key: 'address', // Note: Do not use underscore("_") in key!
-            data: address,
-        });
-    }
-}
-
-export const removeAddres = async (addr) => {
-    var address = await getAddress()
-    if (address.includes(addr)) {
-        address = address.filter(function (a) {
-            return a !== addr;
-        });
-        storage.save({
-            key: 'address', // Note: Do not use underscore("_") in key!
-            data: address,
-        });
-    }
-}
-
-export const getAddress = async () => {
-    return storage
-        .load({
-            key: 'address',
-        }).then(res => res)
-        .catch(err => {
-            // any exception including data not found
-            // goes to catch()
-            console.warn(err.message);
-            switch (err.name) {
-                case 'NotFoundError':
-                    return [];
-                case 'ExpiredError':
-                    return [];
-            }
-        });
-}
-
-export const addXpubs = async (xpub) => {
-    var xpubs = await getXpubs()
-    if (xpub !== "" && !xpubs.includes(xpub)) {
-        xpubs.push(xpub)
-        storage.save({
-            key: 'xpubs', // Note: Do not use underscore("_") in key!
-            data: xpubs,
-        });
-    }
-}
-
-export const removeXpubs = async (xpub) => {
-    var xpubs = await getXpubs()
-    if (xpubs.includes(xpub)) {
-        xpubs = xpubs.filter(function (x) {
-            return x !== xpub;
-        });
-        storage.save({
-            key: 'xpubs', // Note: Do not use underscore("_") in key!
-            data: xpubs,
-        });
-    }
-}
-
-export const getXpubs = async () => {
-    return storage
-        .load({
-            key: 'xpubs',
-        }).then(res => res)
-        .catch(err => {
-            // any exception including data not found
-            // goes to catch()
-            console.warn(err.message);
-            switch (err.name) {
-                case 'NotFoundError':
-                    return [];
-                case 'ExpiredError':
-                    return [];
-            }
-        });
-}
-
 
 export const getBalances = async (cloned = false) => {
     const clone = (items) => items.map(item => (Array.isArray(item) ? clone(item) : item));
